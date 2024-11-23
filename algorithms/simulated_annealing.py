@@ -1,6 +1,6 @@
 import time
-import numpy as np
 import random
+import numpy as np
 
 
 def calculate_distance_matrix(coordinates):

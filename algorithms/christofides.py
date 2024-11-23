@@ -1,8 +1,7 @@
 import time
 import networkx as nx
-from scipy.spatial import distance
 import matplotlib.pyplot as plt
-import networkx as nx
+from scipy.spatial import distance
 
 
 def plot_tsp_path(coordinates, tsp_path):

@@ -26,13 +26,13 @@ def print_algorithm_stats(algorithm_name, costs, times, iterations):
         "iteraciones promedio": np.average(iterations),
     }
     for key, value in stats.items():
-        print(f"{key.capitalize()}: {value:.2f}")
+        print(f"{key.capitalize()}: {value:.4f}")
     return stats
 
 
 # Helper function to run an algorithm multiple times
 def run_algorithm_multiple_times(
-    algorithm, distance_matrix, params, num_runs, plot_filename_prefix
+    algorithm, distance_matrix, params, num_runs, name, plot_filename_prefix
 ):
     costs, times, iterations, conv_data = [], [], [], []
 
@@ -50,7 +50,7 @@ def run_algorithm_multiple_times(
                 conv,
                 "Iteración",
                 "Costo",
-                f"Convergencia de {plot_filename_prefix}",
+                f"Convergencia de {name} (ejecución 1)",
                 f"{plot_filename_prefix}.png",
             )
 
@@ -112,7 +112,7 @@ def punto_1(coordinates, distance_matrix):
 
 
 def punto_2(coordinates, distance_matrix):
-    print("Punto 2: Análisis de convergencia y varianza")
+    print("\nPunto 2: Análisis de convergencia y varianza")
     n = len(coordinates)
 
     num_runs = 30
@@ -122,13 +122,23 @@ def punto_2(coordinates, distance_matrix):
     # Run Simulated Annealing
     print("\n--- Simulated Annealing ---")
     sa_costs, sa_times, sa_iters, _ = run_algorithm_multiple_times(
-        sa.simulated_annealing, distance_matrix, sa_param, num_runs, "pt2_sa"
+        sa.simulated_annealing,
+        distance_matrix,
+        sa_param,
+        num_runs,
+        "Simulated Annealing",
+        "pt2_sa",
     )
 
     # Run Ant Colony Optimization
     print("\n--- Ant Colony Optimization ---")
     aco_costs, aco_times, aco_iters, _ = run_algorithm_multiple_times(
-        aco.ant_colony_optimization, distance_matrix, aco_param, num_runs, "pt2_aco"
+        aco.ant_colony_optimization,
+        distance_matrix,
+        aco_param,
+        num_runs,
+        "Ant Colony",
+        "pt2_aco",
     )
 
     # Boxplot of cost variance
@@ -162,10 +172,11 @@ def punto_2(coordinates, distance_matrix):
 
 
 def punto_3(coordinates, distance_matrix):
-    print("Punto 3: Optimización de parámetros")
+    print("\nPunto 3: Optimización de parámetros")
 
-    sa_param = {"T": 20, "TF": 1e-10, "alpha": 0.987, "max_iter": 5000}
-    aco_param = {"nants": 15, "max_iter": 100, "rho": 0.7, "alpha": 0.5, "beta": 13}
+    n = len(coordinates)
+    sa_param = {"T": 20, "TF": 1e-8, "alpha": 0.995, "max_iter": 10000}
+    aco_param = {"nants": n, "max_iter": 300, "rho": 0.7, "alpha": 0.8, "beta": 10}
 
     # Run Simulated Annealing
     print("\nEjecutando Simulated Annealing con los siguientes parámetros:")
@@ -191,34 +202,34 @@ def punto_3(coordinates, distance_matrix):
         aco_conv,
         "Iteración",
         "Costo",
-        "Convergencia de Ant Colony Optimization",
+        "Convergencia de Ant Colony",
         "pt3_aco.png",
     )
 
 
-def punto_4(coordinates):
-    print("Punto 4: Comparación de algoritmos")
+def punto_4(coordinates, distance_matrix):
+    print("\nPunto 4: Comparación de algoritmos")
 
-    cf_path, cf_cost, cf_time = cf.christofides_algorithm(coordinates)
+    cf_path, cf_cost, cf_time = cf.christofides_algorithm(coordinates, distance_matrix)
     cf_stats = {"Costo": cf_cost, "Tiempo": cf_time}
     print(f"Christofides: {cf_stats}")
-    cf.plot_tsp_path(coordinates, cf_path)
+    cf.plot_solution(coordinates, cf_path)
 
 
 def main():
     coordinates, distance_matrix = load_data()
 
-    # Punto 1: Parameter tuning for SA and ACO
+    # # Punto 1: Parameter tuning for SA and ACO
     punto_1(coordinates, distance_matrix)
 
-    # Punto 2: Convergence and variance analysis
+    # # Punto 2: Convergence and variance analysis
     punto_2(coordinates, distance_matrix)
 
-    # Punto 3: Parameter optimization
+    # # Punto 3: Parameter optimization
     punto_3(coordinates, distance_matrix)
 
     # Punto 4: Comparison with Christofides
-    punto_4(coordinates)
+    punto_4(coordinates, distance_matrix)
 
 
 if __name__ == "__main__":
